@@ -1,0 +1,29 @@
+name: Deployment lifecycle independence smoke
+
+on:
+  push:
+    branches: [example/vite]
+    paths: [.github/workflows/deployment-ci-independence.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deployment-lifecycle-independence
+  cancel-in-progress: false
+
+jobs:
+  smoke:
+    runs-on: [qiniu, ubuntu-latest]
+    timeout-minutes: 5
+    steps:
+      - name: Observe independent CI runner lifecycle
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = x86_64
+          test -x /opt/actions-runner/run.sh
+          printf 'CI runner started; deployment must keep its own Sandbox.\n'
+          sleep 30
+          printf 'CI completed; runnerd must release only this Job Sandbox.\n'
