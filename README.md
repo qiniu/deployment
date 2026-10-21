@@ -1,6 +1,6 @@
 # 七牛 LAS 一键部署
 
-本仓库用于介绍七牛 LAS 一键部署服务，并维护部署配置的 Schema 文件。示例应用通过独立分支提供。
+本仓库用于介绍七牛 LAS 一键部署服务，并维护部署配置的 Schema 文件和部署按钮。示例应用通过独立分支提供。
 
 ## 一键部署是什么
 
@@ -16,18 +16,28 @@ LAS 一键部署可以将公开 GitHub 仓库中的应用部署到 Sandbox，适
 
 服务能力、当前限制和计费规则以[官方介绍](https://developer.qiniu.com/las/13567/deployment-overview)及控制台展示为准。
 
-## 部署配置与 Schema
+## 仓库结构
 
-部署配置默认位于应用仓库的 `.qiniu/deploy.yaml`。字段说明和使用要求请参阅[部署配置文件](https://developer.qiniu.com/las/13569/deployment-config)。
+```text
+README.md                    # 服务介绍和使用入口
+schemas/
+  v1/deploy.schema.json       # v1 部署配置协议
+assets/
+  button.svg                 # README 部署按钮
+docs/
+  schema.md                  # Schema 引用与配置示例
+  deploy-button.md            # 部署按钮和链接用法
+```
 
-`main` 分支用于维护服务介绍及部署配置的 Schema，供编辑器提示和配置校验使用。当前仅完成 README 初始化，Schema 文件尚待添加。
+- [部署配置与 Schema](./docs/schema.md)
+- [在 README 中添加部署按钮](./docs/deploy-button.md)
 
 ## 示例应用
 
-| 分支 | 内容 |
-| --- | --- |
-| [`example/vite`](https://github.com/qiniu/deployment/tree/example/vite) | Vite 前端应用及部署配置 |
-| [`example/go`](https://github.com/qiniu/deployment/tree/example/go) | Go HTTP 服务及部署配置 |
+| 分支 | 内容 | 部署 |
+| --- | --- | --- |
+| [`example/vite`](https://github.com/qiniu/deployment/tree/example/vite) | Vite 前端应用及部署配置 | [![Deploy on Qiniu](./assets/button.svg)](https://portal.qiniu.com/las/deployments/new?repo=qiniu%2Fdeployment&source=branch&ref=example%2Fvite) |
+| [`example/go`](https://github.com/qiniu/deployment/tree/example/go) | Go HTTP 服务及部署配置 | [![Deploy on Qiniu](./assets/button.svg)](https://portal.qiniu.com/las/deployments/new?repo=qiniu%2Fdeployment&source=branch&ref=example%2Fgo) |
 
 选择示例分支时，应用代码和 `.qiniu/deploy.yaml` 均位于该分支中；本地运行方式见各分支的 README。
 

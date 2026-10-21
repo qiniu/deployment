@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/qiniu/deployment/main/schemas/v1/deploy.schema.json",
+  "title": "LAS 部署配置 v1",
+  "description": "仓库 .qiniu/deploy.yaml 的单服务部署配置。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "installCommand", "startCommand", "port"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1,
+      "description": "部署配置协议版本。"
+    },
+    "workingDirectory": {
+      "type": "string",
+      "default": ".",
+      "description": "相对于仓库根目录的命令执行目录；省略或空字符串时使用 .。不能填写纯空白、绝对路径、反斜杠或以 ../ 开头的路径；服务端进一步清理路径并校验仓库边界。",
+      "allOf": [
+        { "not": { "pattern": "\\\\" } },
+        { "not": { "pattern": "^[\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]*(?:/|\\.\\.(?:/|[\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]*$))" } },
+        { "anyOf": [{ "const": "" }, { "pattern": "[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]" }] }
+      ],
+      "examples": [".", "apps/web"]
+    },
+    "installCommand": {
+      "type": "string",
+      "pattern": "[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]",
+      "description": "安装依赖或构建应用的命令。",
+      "examples": ["npm ci", "npm ci && npm run build"]
+    },
+    "startCommand": {
+      "type": "string",
+      "pattern": "[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]",
+      "description": "以前台方式启动 HTTP 服务的命令，服务应监听 0.0.0.0。",
+      "examples": ["npm run start -- --host 0.0.0.0 --port 3000"]
+    },
+    "port": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 65535,
+      "description": "应用监听的 TCP 端口。",
+      "examples": [3000, 4173]
+    },
+    "healthcheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "应用就绪检查；省略时使用路径 / 和 60 秒超时。",
+      "properties": {
+        "path": {
+          "type": "string",
+          "default": "/",
+          "pattern": "^(?:|/(?!/)[^\\\\\\u0000-\\u0020\\u007f?#]*)$",
+          "description": "HTTP 路径，省略或空字符串时使用 /；不能包含域名、查询参数、片段或不安全的转义字符。服务端进一步校验 URL 编码。",
+          "examples": ["/", "/health"]
+        },
+        "timeoutSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 60,
+          "description": "就绪检查最长等待秒数；超过 300 秒时平台按 300 秒执行。"
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "version": 1,
+      "workingDirectory": ".",
+      "installCommand": "npm ci",
+      "startCommand": "npm run start -- --host 0.0.0.0 --port 3000",
+      "port": 3000,
+      "healthcheck": { "path": "/health", "timeoutSeconds": 60 }
+    }
+  ]
+}
